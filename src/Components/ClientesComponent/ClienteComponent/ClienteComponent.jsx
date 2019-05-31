@@ -4,6 +4,7 @@ import MaskedInput from "react-text-mask";
 
 import AuthenticationService from "../../../Services/AuthenticationService";
 import ClienteDataService from "../../../Services/ClienteDataService";
+import CEPDataService from "../../../Services/CEPDataService";
 
 class ClienteComponent extends Component {
   state = {
@@ -80,6 +81,16 @@ class ClienteComponent extends Component {
     }
 
     return errors;
+  };
+
+  getAddress = values => {
+    let cep = values.cep.replace(/[.-]/gi, "");
+    if (cep.length == 8) {
+      CEPDataService.retrieveAddress(cep).then(response => {
+        const data = response.data;
+        this.setState({ cep: cep, bairro: data.bairro, cidade: data.localidade, uf: data.uf, logradouro: data.logradouro });
+      });
+    }
   };
 
   onSubmit = values => {
@@ -235,6 +246,13 @@ class ClienteComponent extends Component {
                       />
                     )}
                   </Field>
+                  <br />
+                  <div
+                    className="btn btn-primary"
+                    onClick={() => this.getAddress(props.values)}
+                  >
+                    Consultar CEP
+                  </div>
                 </fieldset>
 
                 {/*  */}
