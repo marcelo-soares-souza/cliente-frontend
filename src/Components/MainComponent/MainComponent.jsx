@@ -7,6 +7,7 @@ import LogoutComponent from "../LogoutComponent/LogoutComponent";
 import ClienteComponent from "../ClientesComponent/ClienteComponent/ClienteComponent";
 import ListClienteComponent from "../ClientesComponent/ListClienteComponent/ListClienteComponent";
 import ErrorComponent from "../ErrorComponent/ErrorComponent";
+import AuthenticatedRoute from "../../Helper/AuthenticatedRoute";
 
 class MainComponent extends Component {
   render() {
@@ -18,9 +19,9 @@ class MainComponent extends Component {
             <Switch>
               <Route path="/" exact component={LoginComponent} />
               <Route path="/login" component={LoginComponent} />
-              <Route path="/logout" component={LogoutComponent} />
-              <Route path="/clientes/:id" component={ClienteComponent} />
-              <Route path="/clientes" component={ListClienteComponent} />
+              <AuthenticatedRoute path="/logout" component={LogoutComponent} />
+              <AuthenticatedRoute path="/clientes/:id" component={ClienteComponent} />
+              <AuthenticatedRoute path="/clientes" component={ListClienteComponent} />
 
               <Route component={ErrorComponent} />
             </Switch>
