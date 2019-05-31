@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const USER_NAME_SESSION_ATTRIBUTE_NAME = "authenticatedUser";
+// export const API_URL = "http://itbio3.org:8080";
 export const API_URL = "http://localhost:8080";
 
 class AuthenticationService {
@@ -37,7 +38,7 @@ class AuthenticationService {
     }
 
     return true;
-  }
+  };
 
   getLoggedInUser = () => {
     let user = sessionStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
@@ -47,7 +48,15 @@ class AuthenticationService {
     }
 
     return user;
-  }
+  };
+
+  isUserAdmin = () => {
+    if (sessionStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME) === "admin") {
+      return true;
+    }
+
+    return false;
+  };
 }
 
 export default new AuthenticationService();

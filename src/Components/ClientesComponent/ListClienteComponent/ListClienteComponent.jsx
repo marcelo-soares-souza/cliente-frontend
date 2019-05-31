@@ -44,30 +44,47 @@ class ListClienteComponent extends Component {
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Editar</th>
-            <th>Apagar</th>
+            <th>Cidade</th>
+            {!AuthenticationService.isUserAdmin() && <th>Detalhes</th>}
+            {AuthenticationService.isUserAdmin() && <th>Editar</th>}
+            {AuthenticationService.isUserAdmin() && <th>Apagar</th>}
           </tr>
         </thead>
         <tbody>
           {this.state.clientes.map(cliente => (
             <tr key={cliente.id}>
               <td>{cliente.nome}</td>
-              <td>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => this.updateClienteClicked(cliente.id)}
-                >
-                  Editar
-                </button>
-              </td>
-              <td>
-                <button
-                  className="btn btn-warning"
-                  onClick={() => this.deleteClienteClicked(cliente.id)}
-                >
-                  Apagar
-                </button>
-              </td>
+              <td>{cliente.cidade}</td>
+              {!AuthenticationService.isUserAdmin() && (
+                <td>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => this.updateClienteClicked(cliente.id)}
+                  >
+                    Detalhes
+                  </button>
+                </td>
+              )}
+              {AuthenticationService.isUserAdmin() && (
+                <td>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => this.updateClienteClicked(cliente.id)}
+                  >
+                    Editar
+                  </button>
+                </td>
+              )}
+              {AuthenticationService.isUserAdmin() && (
+                <td>
+                  <button
+                    className="btn btn-warning"
+                    onClick={() => this.deleteClienteClicked(cliente.id)}
+                  >
+                    Apagar
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -80,15 +97,22 @@ class ListClienteComponent extends Component {
           <div className="alert alert-success"> {this.state.message}</div>
         )}
         <div className="container">
-          {this.state.clientes.length > 0 ? clientes : <h1>Nenhum Cliente Cadastrado</h1>}
-          <div className="row">
-            <button
-              className="btn btn-success"
-              onClick={() => this.addClienteClicked()}
-            >
-              Adicionar Cliente
-            </button>
-          </div>
+          {this.state.clientes.length > 0 ? (
+            clientes
+          ) : (
+            <h1>Nenhum Cliente Cadastrado</h1>
+          )}
+
+          {AuthenticationService.isUserAdmin() && (
+            <div className="row">
+              <button
+                className="btn btn-success"
+                onClick={() => this.addClienteClicked()}
+              >
+                Adicionar Cliente
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

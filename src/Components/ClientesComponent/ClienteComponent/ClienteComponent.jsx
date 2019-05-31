@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import MaskedInput from "react-text-mask";
 
 import AuthenticationService from "../../../Services/AuthenticationService";
 import ClienteDataService from "../../../Services/ClienteDataService";
@@ -77,8 +78,7 @@ class ClienteComponent extends Component {
     if (!values.uf) {
       errors.uf = "Entre uma UF";
     }
-    
-    
+
     return errors;
   };
 
@@ -88,13 +88,13 @@ class ClienteComponent extends Component {
     let cliente = {
       id: this.state.id,
       nome: values.nome,
-      cpf: values.cpf,
-      cep: values.cep,
+      cpf: values.cpf.replace(/[.-]/gi, ""),
+      cep: values.cep.replace(/[.-]/gi, ""),
       logradouro: values.logradouro,
       bairro: values.bairro,
       cidade: values.cidade,
       uf: values.uf,
-      telefone: values.telefone,
+      telefone: values.telefone.replace(/[.\-()]/gi, ""),
       email: values.email
     };
 
@@ -156,7 +156,13 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>Nome</label>
-                  <Field className="form-control" type="text" name="nome" />
+                  <Field
+                    className="form-control"
+                    type="text"
+                    name="nome"
+                    placeholder="Nome Completo"
+                    disabled={!AuthenticationService.isUserAdmin()}
+                  />
                 </fieldset>
 
                 {/*  */}
@@ -169,7 +175,32 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>CPF</label>
-                  <Field className="form-control" type="text" name="cpf" />
+                  <Field className="form-control" type="text" name="cpf">
+                    {({ field }) => (
+                      <MaskedInput
+                        mask={[
+                          /[1-9]/,
+                          /\d/,
+                          /\d/,
+                          ".",
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          ".",
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          "-",
+                          /\d/,
+                          /\d/
+                        ]}
+                        {...field}
+                        placeholder="CPF"
+                        className="form-control"
+                        disabled={!AuthenticationService.isUserAdmin()}
+                      />
+                    )}
+                  </Field>
                 </fieldset>
 
                 {/*  */}
@@ -182,7 +213,28 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>CEP</label>
-                  <Field className="form-control" type="text" name="cep" />
+                  <Field className="form-control" type="text" name="cep">
+                    {({ field }) => (
+                      <MaskedInput
+                        mask={[
+                          /[1-9]/,
+                          /\d/,
+                          ".",
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          "-",
+                          /\d/,
+                          /\d/,
+                          /\d/
+                        ]}
+                        {...field}
+                        placeholder="CEP"
+                        className="form-control"
+                        disabled={!AuthenticationService.isUserAdmin()}
+                      />
+                    )}
+                  </Field>
                 </fieldset>
 
                 {/*  */}
@@ -199,6 +251,7 @@ class ClienteComponent extends Component {
                     className="form-control"
                     type="text"
                     name="logradouro"
+                    disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
 
@@ -212,7 +265,12 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>Bairro</label>
-                  <Field className="form-control" type="text" name="bairro" />
+                  <Field
+                    className="form-control"
+                    type="text"
+                    name="bairro"
+                    disabled={!AuthenticationService.isUserAdmin()}
+                  />
                 </fieldset>
 
                 {/*  */}
@@ -221,11 +279,17 @@ class ClienteComponent extends Component {
                   name="cidade"
                   component="div"
                   className="alert alert-warning"
+                  disabled={!AuthenticationService.isUserAdmin()}
                 />
 
                 <fieldset className="form-group">
                   <label>Cidade</label>
-                  <Field className="form-control" type="text" name="cidade" />
+                  <Field
+                    className="form-control"
+                    type="text"
+                    name="cidade"
+                    disabled={!AuthenticationService.isUserAdmin()}
+                  />
                 </fieldset>
 
                 {/*  */}
@@ -238,7 +302,12 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>UF</label>
-                  <Field className="form-control" type="text" name="uf" />
+                  <Field
+                    className="form-control"
+                    type="text"
+                    name="uf"
+                    disabled={!AuthenticationService.isUserAdmin()}
+                  />
                 </fieldset>
 
                 {/*  */}
@@ -251,7 +320,32 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>Telefone</label>
-                  <Field className="form-control" type="text" name="telefone" />
+                  <Field className="form-control" type="text" name="telefone">
+                    {({ field }) => (
+                      <MaskedInput
+                        mask={[
+                          "(",
+                          /[1-9]/,
+                          /\d/,
+                          ")",
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          "-",
+                          /\d/,
+                          /\d/,
+                          /\d/,
+                          /\d/
+                        ]}
+                        {...field}
+                        placeholder="Telefone"
+                        className="form-control"
+                        disabled={!AuthenticationService.isUserAdmin()}
+                      />
+                    )}
+                  </Field>
                 </fieldset>
 
                 {/*  */}
@@ -264,14 +358,20 @@ class ClienteComponent extends Component {
 
                 <fieldset className="form-group">
                   <label>E-Mail</label>
-                  <Field className="form-control" type="text" name="email" />
+                  <Field
+                    className="form-control"
+                    type="text"
+                    name="email"
+                    disabled={!AuthenticationService.isUserAdmin()}
+                  />
                 </fieldset>
 
                 {/* Button */}
-
-                <button className="btn btn-success" type="submit">
-                  Salvar
-                </button>
+                {AuthenticationService.isUserAdmin() && (
+                  <button className="btn btn-success" type="submit">
+                    Salvar
+                  </button>
+                )}
               </Form>
             )}
           </Formik>
