@@ -88,7 +88,14 @@ class ClienteComponent extends Component {
     if (cep.length == 8) {
       CEPDataService.retrieveAddress(cep).then(response => {
         const data = response.data;
-        this.setState({ cep: cep, bairro: data.bairro, cidade: data.localidade, uf: data.uf, logradouro: data.logradouro });
+        this.setState({
+          ...values,
+          cep: cep,
+          bairro: data.bairro,
+          cidade: data.localidade,
+          uf: data.uf,
+          logradouro: data.logradouro
+        });
       });
     }
   };
@@ -246,13 +253,15 @@ class ClienteComponent extends Component {
                       />
                     )}
                   </Field>
-                  <br />
-                  <div
-                    className="btn btn-primary"
-                    onClick={() => this.getAddress(props.values)}
-                  >
-                    Consultar CEP
-                  </div>
+
+                  {AuthenticationService.isUserAdmin() && (
+                    <div
+                      className="btn btn-primary"
+                      onClick={() => this.getAddress(props.values)}
+                    >
+                      Consultar CEP
+                    </div>
+                  )}
                 </fieldset>
 
                 {/*  */}
