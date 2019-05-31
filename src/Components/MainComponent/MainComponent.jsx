@@ -5,6 +5,8 @@ import HeaderComponent from "../Layout/HeaderComponent";
 import FooterComponent from "../Layout/FooterComponent";
 import LoginComponent from "../LoginComponent/LoginComponent";
 import LogoutComponent from "../LogoutComponent/LogoutComponent";
+import ClienteComponent from "../ClientesComponent/ClienteComponent/ClienteComponent";
+import ListClienteComponent from "../ClientesComponent/ListClienteComponent/ListClienteComponent";
 import ErrorComponent from "../ErrorComponent/ErrorComponent";
 
 class MainComponent extends Component {
@@ -18,6 +20,8 @@ class MainComponent extends Component {
               <Route path="/" exact component={LoginComponent} />
               <Route path="/login" component={LoginComponent} />
               <Route path="/logout" component={LogoutComponent} />
+              <Route path="/clientes/:id" component={ClienteComponent} />
+              <Route path="/clientes" component={ListClienteComponent} />
 
               <Route component={ErrorComponent} />
             </Switch>
