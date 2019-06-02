@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import MaskedInput from "react-text-mask";
 
 import AuthenticationService from "../../../Services/AuthenticationService";
@@ -16,8 +16,8 @@ class ClienteComponent extends Component {
     bairro: "",
     cidade: "",
     uf: "",
-    telefone: "",
-    email: ""
+    telefones: [],
+    emails: []
   };
 
   componentDidMount() {
@@ -39,8 +39,8 @@ class ClienteComponent extends Component {
         bairro: response.data.bairro,
         cidade: response.data.cidade,
         uf: response.data.uf,
-        telefone: response.data.telefone,
-        email: response.data.email
+        telefones: response.data.telefones,
+        emails: response.data.emails
       });
     });
   }
@@ -85,7 +85,7 @@ class ClienteComponent extends Component {
 
   getAddress = values => {
     let cep = values.cep.replace(/[.-]/gi, "");
-    if (cep.length == 8) {
+    if (cep.length === 8) {
       CEPDataService.retrieveAddress(cep).then(response => {
         const data = response.data;
         this.setState({
@@ -112,8 +112,8 @@ class ClienteComponent extends Component {
       bairro: values.bairro,
       cidade: values.cidade,
       uf: values.uf,
-      telefone: values.telefone.replace(/[.\-()]/gi, ""),
-      email: values.email
+      telefones: values.telefones,
+      emails: values.emails
     };
 
     if (this.state.id === -1) {
@@ -138,8 +138,8 @@ class ClienteComponent extends Component {
       bairro,
       cidade,
       uf,
-      telefone,
-      email
+      telefones,
+      emails
     } = this.state;
 
     return (
@@ -155,8 +155,8 @@ class ClienteComponent extends Component {
               bairro,
               cidade,
               uf,
-              telefone,
-              email
+              telefones,
+              emails
             }}
             onSubmit={this.onSubmit}
             validateOnChange={false}
@@ -171,7 +171,6 @@ class ClienteComponent extends Component {
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>Nome</label>
                   <Field
@@ -182,15 +181,12 @@ class ClienteComponent extends Component {
                     disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="cpf"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>CPF</label>
                   <Field className="form-control" type="text" name="cpf">
@@ -220,15 +216,12 @@ class ClienteComponent extends Component {
                     )}
                   </Field>
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="cep"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>CEP</label>
                   <Field className="form-control" type="text" name="cep">
@@ -256,22 +249,20 @@ class ClienteComponent extends Component {
 
                   {AuthenticationService.isUserAdmin() && (
                     <div
-                      className="btn btn-primary"
+                      className="btn btn-secondary"
+                      style={{ margin: "8px 8px" }}
                       onClick={() => this.getAddress(props.values)}
                     >
                       Consultar CEP
                     </div>
                   )}
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="logradouro"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>Logradouro</label>
                   <Field
@@ -281,15 +272,12 @@ class ClienteComponent extends Component {
                     disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="bairro"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>Bairro</label>
                   <Field
@@ -299,16 +287,13 @@ class ClienteComponent extends Component {
                     disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="cidade"
                   component="div"
                   className="alert alert-warning"
                   disabled={!AuthenticationService.isUserAdmin()}
                 />
-
                 <fieldset className="form-group">
                   <label>Cidade</label>
                   <Field
@@ -318,15 +303,12 @@ class ClienteComponent extends Component {
                     disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="uf"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
                   <label>UF</label>
                   <Field
@@ -336,63 +318,124 @@ class ClienteComponent extends Component {
                     disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
-
                 {/*  */}
-
                 <ErrorMessage
                   name="telefone"
                   component="div"
                   className="alert alert-warning"
                 />
-
                 <fieldset className="form-group">
-                  <label>Telefone</label>
-                  <Field className="form-control" type="text" name="telefone">
-                    {({ field }) => (
-                      <MaskedInput
-                        mask={[
-                          "(",
-                          /[1-9]/,
-                          /\d/,
-                          ")",
-                          /\d/,
-                          /\d/,
-                          /\d/,
-                          /\d/,
-                          /\d/,
-                          "-",
-                          /\d/,
-                          /\d/,
-                          /\d/,
-                          /\d/
-                        ]}
-                        {...field}
-                        placeholder="Telefone"
-                        className="form-control"
-                        disabled={!AuthenticationService.isUserAdmin()}
-                      />
+                  <label>Telefones</label>
+                  <FieldArray
+                    name="telefones"
+                    render={arrayHelpers => (
+                      <div>
+                        {props.values.telefones &&
+                        props.values.telefones.length > 0
+                          ? props.values.telefones.map((telefone, index) => (
+                              <div key={index}>
+                                <Field
+                                  className="form-control"
+                                  name={`telefones.${index}`}
+                                  style={{ margin: "8px" }}
+                                  disabled={
+                                    !AuthenticationService.isUserAdmin()
+                                  }
+                                />
+                                {AuthenticationService.isUserAdmin() && (
+                                  <div>
+                                    <button
+                                      className="btn btn-info"
+                                      style={{ margin: "8px 8px" }}
+                                      type="button"
+                                      onClick={() => arrayHelpers.remove(index)}
+                                    >
+                                      -
+                                    </button>
+                                    <button
+                                      className="btn btn-info"
+                                      style={{ margin: "8px 8px" }}
+                                      type="button"
+                                      onClick={() =>
+                                        arrayHelpers.insert(index, "")
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          : AuthenticationService.isUserAdmin() && (
+                              <button
+                                className="btn btn-secondary"
+                                type="button"
+                                onClick={() => arrayHelpers.push("")}
+                              >
+                                Adicionar Novo Telefone
+                              </button>
+                            )}
+                      </div>
                     )}
-                  </Field>
-                </fieldset>
-
-                {/*  */}
-
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="alert alert-warning"
-                />
-
-                <fieldset className="form-group">
-                  <label>E-Mail</label>
-                  <Field
-                    className="form-control"
-                    type="text"
-                    name="email"
-                    disabled={!AuthenticationService.isUserAdmin()}
                   />
                 </fieldset>
+                {/*  */}
+                <fieldset className="form-group">
+                  <label>E-Mails</label>
+                  <FieldArray
+                    name="emails"
+                    render={arrayHelpers => (
+                      <div>
+                        {props.values.emails && props.values.emails.length > 0
+                          ? props.values.emails.map((email, index) => (
+                              <div key={index}>
+                                <Field
+                                  className="form-control"
+                                  name={`emails.${index}`}
+                                  style={{ margin: "8px" }}
+                                  disabled={
+                                    !AuthenticationService.isUserAdmin()
+                                  }
+                                />
 
+                                {AuthenticationService.isUserAdmin() && (
+                                  <div>
+                                    <button
+                                      className="btn btn-info"
+                                      style={{ margin: "8px 8px" }}
+                                      type="button"
+                                      onClick={() => arrayHelpers.remove(index)}
+                                    >
+                                      -
+                                    </button>
+
+                                    <button
+                                      className="btn btn-info"
+                                      style={{ margin: "8px 8px" }}
+                                      type="button"
+                                      onClick={() =>
+                                        arrayHelpers.insert(index, "")
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          : AuthenticationService.isUserAdmin() && (
+                              <button
+                                className="btn btn-secondary"
+                                type="button"
+                                onClick={() => arrayHelpers.push("")}
+                              >
+                                Adicionar Novo E-Mail
+                              </button>
+                            )}
+                      </div>
+                    )}
+                  />
+                </fieldset>{" "}
                 {/* Button */}
                 {AuthenticationService.isUserAdmin() && (
                   <button className="btn btn-success" type="submit">
